@@ -26,21 +26,17 @@ type PlaceFile struct {
 }
 
 type Place struct {
-	name  string
-	image string
-	exits []Exit
-}
-
-type Rect struct {
-	x      int
-	y      int
-	width  int
-	height int
+	Name  string `json:"name"`
+	Image string `json:"image"`
+	Exits []Exit `json:"exits"`
 }
 
 type Exit struct {
-	rect  Rect
-	place string
+	X      int    `json:"x"`
+	Y      int    `json:"y"`
+	Width  int    `json:"width"`
+	Height int    `json:"height"`
+	Place  string `json:"place"`
 }
 
 func LoadPlace(placepath string) (*Place, error) {
@@ -52,8 +48,8 @@ func LoadPlace(placepath string) (*Place, error) {
 	if err != nil {
 		return nil, err
 	}
-	place.name = strings.TrimSuffix(filepath.Base(placepath), filepath.Ext(placepath))
-	place.image = filepath.Join(filepath.Dir(placepath), place.image)
+	place.Name = strings.TrimSuffix(filepath.Base(placepath), filepath.Ext(placepath))
+	place.Image = filepath.Join(filepath.Dir(placepath), place.Image)
 	return place, nil
 }
 
@@ -67,23 +63,21 @@ func ReadPlace(r io.Reader) (*Place, error) {
 	place := &Place{}
 	for _, layer := range placefile.Layers {
 		if layer.Image != "" {
-			place.image = layer.Image
+			place.Image = layer.Image
 		} else if layer.Objects != nil {
 			for _, object := range layer.Objects {
 				exit := Exit{
-					rect: Rect{
-						x:      object.X,
-						y:      object.Y,
-						width:  object.Width,
-						height: object.Height,
-					},
+					X:      object.X,
+					Y:      object.Y,
+					Width:  object.Width,
+					Height: object.Height,
 				}
 				for _, p := range object.Properties {
 					if p.Name == "NextPlace" {
-						exit.place = p.Value
+						exit.Place = p.Value
 					}
 				}
-				place.exits = append(place.exits, exit)
+				place.Exits = append(place.Exits, exit)
 			}
 		}
 	}
@@ -99,7 +93,7 @@ func LoadPlaces(pattern string) map[string]*Place {
 			fmt.Println(err)
 			continue
 		}
-		places[place.name] = place
+		places[place.Name] = place
 	}
 	return places
 }
