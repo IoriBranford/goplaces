@@ -8,22 +8,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Place struct {
-	Id    int
-	Image string
-	Exits []Exit
-}
-
-type Exit struct {
-	ClickRect struct {
-		x      int
-		y      int
-		width  int
-		height int
-	}
-	NextPlace Place
-}
-
 func main() {
 	r := mux.NewRouter()
 
