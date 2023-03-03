@@ -7,19 +7,19 @@ import (
 )
 
 type PlaceFile struct {
-	layers []struct {
-		image   string
-		objects []struct {
-			x          int
-			y          int
-			width      int
-			height     int
-			properties []struct {
-				name  string
-				value string
-			}
-		}
-	}
+	Layers []struct {
+		Image   string `json:"image"`
+		Objects []struct {
+			X          int `json:"x"`
+			Y          int `json:"y"`
+			Width      int `json:"width"`
+			Height     int `json:"height"`
+			Properties []struct {
+				Name  string `json:"name"`
+				Value string `json:"value"`
+			} `json:"properties"`
+		} `json:"objects"`
+	} `json:"layers"`
 }
 
 type Place struct {
@@ -48,22 +48,23 @@ func LoadPlace(placename string) (*Place, error) {
 	placefile := &PlaceFile{}
 	place := &Place{}
 	json.NewDecoder(r).Decode(placefile)
-	for _, layer := range placefile.layers {
-		if layer.image != "" {
-			place.image = layer.image
-		} else if layer.objects != nil {
-			for _, object := range layer.objects {
+	fmt.Print(placefile)
+	for _, layer := range placefile.Layers {
+		if layer.Image != "" {
+			place.image = layer.Image
+		} else if layer.Objects != nil {
+			for _, object := range layer.Objects {
 				exit := Exit{
 					rect: Rect{
-						x:      object.x,
-						y:      object.y,
-						width:  object.width,
-						height: object.height,
+						x:      object.X,
+						y:      object.Y,
+						width:  object.Width,
+						height: object.Height,
 					},
 				}
-				for _, p := range object.properties {
-					if p.name == "NextPlace" {
-						exit.place = p.value
+				for _, p := range object.Properties {
+					if p.Name == "NextPlace" {
+						exit.place = p.Value
 					}
 				}
 				place.exits = append(place.exits, exit)
