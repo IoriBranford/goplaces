@@ -2,14 +2,8 @@ FROM golang:1.20-alpine
 
 WORKDIR /app
 
-COPY go.mod ./
-COPY go.sum ./
+RUN go install github.com/cosmtrek/air@v1.42.0
+COPY go.mod go.sum ./
 RUN go mod download
 
-COPY *.go ./
-
-RUN go build -o /goplaces-server
-
-EXPOSE 8080
-
-CMD [ "/goplaces-server" ]
+CMD ["air", "-c", ".air.toml"]
