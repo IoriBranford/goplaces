@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -25,6 +26,7 @@ type PlaceFile struct {
 }
 
 type Place struct {
+	name  string
 	image string
 	exits []Exit
 }
@@ -42,17 +44,30 @@ type Exit struct {
 }
 
 func LoadPlace(placepath string) (*Place, error) {
-	dir := filepath.Dir(placepath)
 	r, err := os.Open(placepath)
 	if err != nil {
 		return nil, err
 	}
+	place, err := ReadPlace(r)
+	if err != nil {
+		return nil, err
+	}
+	place.name = strings.TrimSuffix(filepath.Base(placepath), filepath.Ext(placepath))
+	place.image = filepath.Join(filepath.Dir(placepath), place.image)
+	return place, nil
+}
+
+func ReadPlace(r io.Reader) (*Place, error) {
 	placefile := &PlaceFile{}
+	err := json.NewDecoder(r).Decode(placefile)
+	if err != nil {
+		return nil, err
+	}
+
 	place := &Place{}
-	json.NewDecoder(r).Decode(placefile)
 	for _, layer := range placefile.Layers {
 		if layer.Image != "" {
-			place.image = filepath.Join(dir, layer.Image)
+			place.image = layer.Image
 		} else if layer.Objects != nil {
 			for _, object := range layer.Objects {
 				exit := Exit{
@@ -84,8 +99,7 @@ func LoadPlaces(pattern string) map[string]*Place {
 			fmt.Println(err)
 			continue
 		}
-		name := strings.TrimSuffix(filepath.Base(placefile), filepath.Ext(placefile))
-		places[name] = place
+		places[place.name] = place
 	}
 	return places
 }
