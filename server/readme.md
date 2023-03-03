@@ -3,7 +3,7 @@
 ## Data Types
 
 Place
--   Graphic
+-   Image
 -   Exits to other places
 -   Users in this place
 
@@ -34,9 +34,13 @@ Create user
 Delete user
 -   out: success or failure
 
+Get place
+-   in: place UUID
+-   out: place
+
 Move user
 -   in: next place UUID
--   out: next place, or failure if that place is not reachable from current place
+-   out: next place, or failure if that place is not reachable from user's current place
 
 Message another user
 -   in: source user UUID, new message
