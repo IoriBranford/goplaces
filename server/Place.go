@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type PlaceFile struct {
@@ -72,4 +73,19 @@ func LoadPlace(placepath string) (*Place, error) {
 		}
 	}
 	return place, nil
+}
+
+func LoadPlaces(pattern string) map[string]*Place {
+	places := map[string]*Place{}
+	placefiles, _ := filepath.Glob(pattern)
+	for _, placefile := range placefiles {
+		place, err := LoadPlace(placefile)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		name := strings.TrimSuffix(filepath.Base(placefile), filepath.Ext(placefile))
+		places[name] = place
+	}
+	return places
 }
