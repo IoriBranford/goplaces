@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type PlaceFile struct {
@@ -39,8 +40,8 @@ type Exit struct {
 	place string
 }
 
-func LoadPlace(placename string) (*Place, error) {
-	placepath := fmt.Sprintf("assets/%s.tmj", placename)
+func LoadPlace(placepath string) (*Place, error) {
+	dir := filepath.Dir(placepath)
 	r, err := os.Open(placepath)
 	if err != nil {
 		return nil, err
@@ -48,10 +49,9 @@ func LoadPlace(placename string) (*Place, error) {
 	placefile := &PlaceFile{}
 	place := &Place{}
 	json.NewDecoder(r).Decode(placefile)
-	fmt.Print(placefile)
 	for _, layer := range placefile.Layers {
 		if layer.Image != "" {
-			place.image = layer.Image
+			place.image = filepath.Join(dir, layer.Image)
 		} else if layer.Objects != nil {
 			for _, object := range layer.Objects {
 				exit := Exit{

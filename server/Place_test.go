@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadPlace(t *testing.T) {
-	place, err := LoadPlace("Train_Day")
+	place, err := LoadPlace("assets/Train_Day.tmj")
 	assert.NotNil(t, place)
 	assert.Nil(t, err)
 	assert.Contains(t, place.image, "Train_Day")
